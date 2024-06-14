@@ -1,66 +1,316 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+### Documentation for Admission Portal Application
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Table of Contents
 
-## About Laravel
+1. [Introduction](#introduction)
+2. [Installation](#installation)
+3. [Configuration](#configuration)
+4. [Database Migrations](#database-migrations)
+5. [Running the Application](#running-the-application)
+6. [Features](#features)
+7. [Form Submission Details](#form-submission-details)
+8. [Admin Panel](#admin-panel)
+9. [File Storage](#file-storage)
+10. [Troubleshooting](#troubleshooting)
+11. [License](#license)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Introduction
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+This is a web application for managing student admissions. It allows users to submit admission forms and check their status. Admin users can view submissions, update admission statuses, and manage admitted students.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Installation
 
-## Learning Laravel
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/yourusername/admission-portal.git
+    cd admission-portal
+    ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+2. Install dependencies:
+    ```bash
+    composer install
+    npm install
+    ```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+3. Create a copy of the `.env` file:
+    ```bash
+    cp .env.example .env
+    ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+4. Generate an application key:
+    ```bash
+    php artisan key:generate
+    ```
 
-## Laravel Sponsors
+## Configuration
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1. Update the `.env` file with your database and other necessary configurations.
+2. Set up your Google Maps Geocoding API key in the `.env` file:
+    ```env
+    GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+    ```
 
-### Premium Partners
+## Database Migrations
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+1. Run the database migrations and seed the database:
+    ```bash
+    php artisan migrate --seed
+    ```
 
-## Contributing
+## Running the Application
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. Start the development server:
+    ```bash
+    php artisan serve
+    ```
 
-## Code of Conduct
+2. Start the frontend build process:
+    ```bash
+    npm run dev
+    ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Features
 
-## Security Vulnerabilities
+### Client Side
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. **Admission Form**: Allows users to submit their admission details including name, email, gender, age, address, and file uploads for transfer certificate and mark sheet.
+2. **Status Check**: Users can check their admission status by entering their registered email address.
+
+### Admin Side
+
+1. **Submissions**: Admins can view a list of all submitted forms and update the admission status.
+2. **Admissions**: Admins can view a list of admitted students and see their free bus fare eligibility status.
+
+## Form Submission Details
+
+### Admission Form
+
+The admission form collects the following information:
+- Name
+- Email
+- Gender
+- Age
+- Address
+- Transfer Certificate (file upload)
+- Mark Sheet (file upload)
+- GPS Coordinates (automatically collected or derived from the address)
+
+### Form Validation and Submission
+
+- The form validates required fields before submission.
+- The GPS coordinates are collected using the browser's geolocation API or derived from the entered address using the Google Maps Geocoding API.
+- The form data is submitted to the backend for storage in the database.
+
+### Example Code for Admission Form View
+
+```blade
+@extends('layouts.app')
+
+@section('content')
+    <h1 class="mb-4">Admission Form</h1>
+    <form action="{{ route('admission_form.submit') }}" method="POST" enctype="multipart/form-data" id="admissionForm">
+        @csrf
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="gender">Gender:</label>
+            <select class="form-control" id="gender" name="gender" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="age">Age:</label>
+            <input type="number" class="form-control" id="age" name="age" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="address">Address:</label>
+            <textarea class="form-control" id="address" name="address" required></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="tc_file">Transfer Certificate:</label>
+            <input type="file" class="form-control-file" id="tc_file" name="tc_file" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="marksheet_file">Mark Sheet:</label>
+            <input type="file" class="form-control-file" id="marksheet_file" name="marksheet_file" required>
+        </div>
+        
+        <input type="hidden" id="gps_coordinates" name="gps_coordinates">
+        
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    document.getElementById('gps_coordinates').value = position.coords.latitude + ',' + position.coords.longitude;
+                }, function(error) {
+                    console.log('Error occurred. Error code: ' + error.code);
+                });
+            } else {
+                console.log('Geolocation is not supported for this Browser/OS.');
+            }
+        });
+
+        document.getElementById('admissionForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const address = document.getElementById('address').value;
+
+            if (!address) {
+                this.submit();
+                return;
+            }
+
+            const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=YOUR_API_KEY`;
+
+            fetch(geocodeUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'OK') {
+                        const location = data.results[0].geometry.location;
+                        document.getElementById('gps_coordinates').value = location.lat + ',' + location.lng;
+                    }
+                    this.submit();
+                })
+                .catch(error => {
+                    console.error('Error fetching geocode:', error);
+                    this.submit();
+                });
+        });
+    </script>
+@endsection
+```
+
+## Admin Panel
+
+The admin panel allows administrators to manage student submissions and admissions. The following functionalities are available:
+
+### Submissions
+
+Admins can view all student submissions, including details such as name, email, gender, age, address, and uploaded files. They can update the admission status for each student.
+
+### Admissions
+
+Admins can view all admitted students and their free bus fare eligibility status.
+
+### Example Code for Admin Views
+
+```blade
+@extends('layouts.admin')
+
+@section('content')
+    <h1 class="mb-4">Student Submissions</h1>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Gender</th>
+                <th>Age</th>
+                <th>Address</th>
+                <th>Transfer Certificate</th>
+                <th>Mark Sheet</th>
+                <th>GPS Coordinates</th>
+                <th>Admitted</th>
+                <th>Free Bus Fare</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($students as $student)
+            <tr>
+                <td>{{ $student->name }}</td>
+                <td>{{ $student->email }}</td>
+                <td>{{ $student->gender }}</td>
+                <td>{{ $student->age }}</td>
+                <td>{{ $student->address }}</td>
+                <td><a href="{{ Storage::url($student->tc_file) }}">View</a></td>
+                <td><a href="{{ Storage::url($student->marksheet_file) }}">View</a></td>
+                <td>{{ $student->gps_coordinates }}</td>
+                <td>{{ $student->admitted ? 'Yes' : 'No' }}</td>
+                <td>{{ $student->free_bus_fare ? 'Yes' : 'No' }}</td>
+                <td>
+                    <form action="{{ route('admin_update_status') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="student_id" value="{{ $student->id }}">
+                        <input type="checkbox" name="admitted" {{ $student->admitted ? 'checked' : '' }}>
+                        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                    </form>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+@endsection
+```
+
+## File Storage
+
+Uploaded files (Transfer Certificates and Mark Sheets) are stored in the `storage/app` directory. Ensure the following configuration in `config/filesystems.php`:
+
+```php
+'disks' => [
+    'local' => [
+        'driver' => 'local',
+        'root' => storage_path('app'),
+        'throw' => false,
+    ],
+
+    'public' => [
+        'driver' => 'local',
+        'root' => storage_path('app/public'),
+        'url' => env('APP_URL').'/storage',
+        'visibility' => 'public',
+        'throw' => false,
+
+
+    ],
+],
+```
+
+Also, create a symbolic link to make the storage accessible from the web:
+
+```bash
+php artisan storage:link
+```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **File Upload Issues**:
+    - Ensure the storage directory has the correct permissions.
+    - Create a symbolic link using `php artisan storage:link`.
+
+2. **Google Maps Geocoding API**:
+    - Ensure the API key is correctly set in the `.env` file.
+
+3. **Database Errors**:
+    - Ensure migrations are up-to-date with `php artisan migrate`.
+
+### Logging
+
+Logs can be found in the `storage/logs/laravel.log` file. Use `Log::info` and `Log::error` to debug issues.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+---
+
+This documentation provides a comprehensive overview of the Admission Portal application, detailing installation, configuration, and usage instructions.
