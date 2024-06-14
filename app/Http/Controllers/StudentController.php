@@ -29,82 +29,83 @@ class StudentController extends Controller
     }
 
     public function store(Request $request)
-    {
-        try {
-            Log::info('Store request received', ['request' => $request->all()]);
+{
+    try {
+        Log::info('Store request received', ['request' => $request->all()]);
 
-            $validatedData = $request->validate([
-                'name' => 'required',
-                'email' => 'required|email|unique:students',
-                'gender' => 'required',
-                'age' => 'required|integer',
-                'address' => 'required',
-                'tc_file' => 'required|file',
-                'marksheet_file' => 'required|file',
-                'gps_coordinates' => 'nullable',
+        $validatedData = $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:students',
+            'gender' => 'required',
+            'age' => 'required|integer',
+            'address' => 'required',
+            'tc_file' => 'required|file',
+            'marksheet_file' => 'required|file',
+            'gps_coordinates' => 'nullable',
+        ]);
+
+        Log::info('Validation passed', ['validatedData' => $validatedData]);
+
+        $tcFilePath = $request->file('tc_file')->store('tc_files', 'public');
+        $markSheetFilePath = $request->file('marksheet_file')->store('marksheet_files', 'public');
+
+        Log::info('Files uploaded', [
+            'tc_file' => $tcFilePath,
+            'marksheet_file' => $markSheetFilePath,
+        ]);
+
+        $freeBusFare = false;
+        if ($request->input('gps_coordinates')) {
+            $coordinates = explode(',', $request->input('gps_coordinates'));
+            $latitude = $coordinates[0];
+            $longitude = $coordinates[1];
+
+            // School coordinates
+            $schoolLatitude = 10.0143499;
+            $schoolLongitude = 76.3921148;
+
+            // Calculate free bus fare eligibility
+            $distance = $this->calculateDistance($latitude, $longitude, $schoolLatitude, $schoolLongitude);
+            $freeBusFare = $distance <= 2;
+
+            Log::info('Distance calculated', [
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'distance' => $distance,
+                'freeBusFare' => $freeBusFare,
             ]);
-
-            Log::info('Validation passed', ['validatedData' => $validatedData]);
-
-            $tcFilePath = $request->file('tc_file')->store('tc_files');
-            $markSheetFilePath = $request->file('marksheet_file')->store('marksheet_files');
-
-            Log::info('Files uploaded', [
-                'tc_file' => $tcFilePath,
-                'marksheet_file' => $markSheetFilePath,
-            ]);
-
-            $freeBusFare = false;
-            if ($request->input('gps_coordinates')) {
-                $coordinates = explode(',', $request->input('gps_coordinates'));
-                $latitude = $coordinates[0];
-                $longitude = $coordinates[1];
-
-                // School coordinates
-                $schoolLatitude = 10.0143499;
-                $schoolLongitude = 76.3921148;
-
-                // Calculate free bus fare eligibility
-                $distance = $this->calculateDistance($latitude, $longitude, $schoolLatitude, $schoolLongitude);
-                $freeBusFare = $distance <= 2;
-
-                Log::info('Distance calculated', [
-                    'latitude' => $latitude,
-                    'longitude' => $longitude,
-                    'distance' => $distance,
-                    'freeBusFare' => $freeBusFare,
-                ]);
-            }
-
-            $student = new Student([
-                'name' => $request->input('name'),
-                'email' => $request->input('email'),
-                'gender' => $request->input('gender'),
-                'age' => $request->input('age'),
-                'address' => $request->input('address'),
-                'tc_file' => $tcFilePath,
-                'marksheet_file' => $markSheetFilePath,
-                'gps_coordinates' => $request->input('gps_coordinates'),
-                'free_bus_fare' => $freeBusFare,
-            ]);
-
-            $student->save();
-
-            Log::info('Student saved', ['student' => $student]);
-
-            if ($request->expectsJson()) {
-                return response()->json(['message' => 'Application submitted successfully!'], 201);
-            }
-
-            return redirect('/')->with('success', 'Application submitted successfully!');
-        } catch (\Exception $e) {
-            Log::error('Error storing student application: ' . $e->getMessage());
-            if ($request->expectsJson()) {
-                return response()->json(['error' => 'Failed to submit application.'], 500);
-            }
-            return redirect()->back()->with('error', 'Failed to submit application.');
         }
+
+        $student = new Student([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'gender' => $request->input('gender'),
+            'age' => $request->input('age'),
+            'address' => $request->input('address'),
+            'tc_file' => $tcFilePath,
+            'marksheet_file' => $markSheetFilePath,
+            'gps_coordinates' => $request->input('gps_coordinates'),
+            'free_bus_fare' => $freeBusFare,
+        ]);
+
+        $student->save();
+
+        Log::info('Student saved', ['student' => $student]);
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Application submitted successfully!'], 201);
+        }
+
+        return redirect('/')->with('success', 'Application submitted successfully!');
+    } catch (\Exception $e) {
+        Log::error('Error storing student application: ' . $e->getMessage());
+        if ($request->expectsJson()) {
+            return response()->json(['error' => 'Failed to submit application.'], 500);
+        }
+        return redirect()->back()->with('error', 'Failed to submit application.');
     }
+}
+
 
     private function calculateDistance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo)
     {
