@@ -20,10 +20,10 @@ class StudentSeeder extends Seeder
             'gender' => 'Male',
             'age' => 20,
             'address' => '123 Main St, Anytown, USA',
-            'tc_file_path' => 'path/to/tc/file',
-            'marksheet_file_path' => 'path/to/marksheet/file',
-            'latitude' => '10.0000',
-            'longitude' => '76.0000',
+            'tc_file' => 'path/to/tc/file',
+            'marksheet_file' => 'path/to/marksheet/file',
+            'gps_coordinates' => '10.0143499, 76.3921148',
+            'free_bus_fare' => false,
             'admitted' => false,
         ]);
     }

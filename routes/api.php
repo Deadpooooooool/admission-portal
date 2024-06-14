@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StudentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+
+Route::post('/store', [StudentController::class, 'store']);
+Route::get('/status', [StudentController::class, 'status']);
+Route::middleware('auth:admin')->group(function () {
+    Route::get('/admin/submissions', [StudentController::class, 'adminIndex']);
+    Route::post('/admin/update-status', [StudentController::class, 'updateStatus']);
+    Route::get('/admin/admissions', [StudentController::class, 'adminAdmissions']);
 });
+

@@ -16,7 +16,7 @@ class Student extends Model
         'age',
         'address',
         'tc_file',
-        'mark_sheet_file',
+        'marksheet_file',
         'gps_coordinates',
         'admitted',
         'free_bus_fare',

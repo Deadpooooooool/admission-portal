@@ -27,7 +27,7 @@
             <td>{{ $student->age }}</td>
             <td>{{ $student->address }}</td>
             <td><a href="{{ Storage::url($student->tc_file) }}" target="_blank">View TC</a></td>
-            <td><a href="{{ Storage::url($student->mark_sheet_file) }}" target="_blank">View Mark Sheet</a></td>
+            <td><a href="{{ Storage::url($student->marksheet_file) }}" target="_blank">View Mark Sheet</a></td>
             <td>{{ $student->gps_coordinates }}</td>
             <td>{{ $student->admitted ? 'Yes' : 'No' }}</td>
             <td>

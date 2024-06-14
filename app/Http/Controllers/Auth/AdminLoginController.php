@@ -18,7 +18,7 @@ class AdminLoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::guard('admin')->attempt($credentials)) {
-            return redirect()->route('admin_submissions');
+            return redirect()->intended('/admin/submissions');
         }
 
         return redirect()->back()->withErrors([

@@ -15,10 +15,9 @@ class CreateStudentsTable extends Migration
             $table->string('gender');
             $table->integer('age');
             $table->text('address');
-            $table->string('tc_file_path')->nullable();  // Correct field name with nullable
-            $table->string('marksheet_file_path')->nullable();  // Correct field name with nullable
-            $table->string('latitude')->nullable();
-            $table->string('longitude')->nullable();
+            $table->string('tc_file')->nullable();  // Correct field name with nullable
+            $table->string('marksheet_file')->nullable();  // Correct field name with nullable
+            $table->string('gps_coordinates')->nullable();
             $table->boolean('admitted')->default(false);
             $table->boolean('free_bus_fare')->default(false);
             $table->timestamps();

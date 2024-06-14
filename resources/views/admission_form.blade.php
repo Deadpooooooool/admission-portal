@@ -2,7 +2,7 @@
 
 @section('content')
     <h1 class="mb-4">Admission Form</h1>
-    <form action="{{ route('submit_admission') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admission_form') }}" method="POST" enctype="multipart/form-data" id="admissionForm">
         @csrf
         <div class="form-group">
             <label for="name">Name:</label>
@@ -17,9 +17,9 @@
         <div class="form-group">
             <label for="gender">Gender:</label>
             <select class="form-control" id="gender" name="gender" required>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
             </select>
         </div>
         
@@ -30,7 +30,7 @@
         
         <div class="form-group">
             <label for="address">Address:</label>
-            <textarea class="form-control" id="address" name="address" required onblur="getCoordinates()"></textarea>
+            <textarea class="form-control" id="address" name="address" required></textarea>
         </div>
         
         <div class="form-group">
@@ -39,8 +39,8 @@
         </div>
         
         <div class="form-group">
-            <label for="mark_sheet_file">Mark Sheet:</label>
-            <input type="file" class="form-control-file" id="mark_sheet_file" name="mark_sheet_file" required>
+            <label for="marksheet_file">Mark Sheet:</label>
+            <input type="file" class="form-control-file" id="marksheet_file" name="marksheet_file" required>
         </div>
         
         <input type="hidden" id="gps_coordinates" name="gps_coordinates">
@@ -49,19 +49,48 @@
     </form>
 
     <script>
-        function getCoordinates() {
-            var address = document.getElementById('address').value;
-            var geocoder = new google.maps.Geocoder();
-            geocoder.geocode({'address': address}, function(results, status) {
-                if (status == 'OK') {
-                    var lat = results[0].geometry.location.lat();
-                    var lng = results[0].geometry.location.lng();
-                    document.getElementById('gps_coordinates').value = lat + "," + lng;
-                } else {
-                    alert('Geocode was not successful for the following reason: ' + status);
-                }
-            });
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    document.getElementById('gps_coordinates').value = position.coords.latitude + ',' + position.coords.longitude;
+                }, function(error) {
+                    console.log('Error occurred. Error code: ' + error.code);
+                });
+            } else {
+                console.log('Geolocation is not supported for this Browser/OS.');
+            }
+        });
+
+        document.getElementById('admissionForm').addEventListener('submit', function(event) {
+            // Implement address to coordinates conversion logic if needed
+        });
+
+        document.getElementById('admissionForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const address = document.getElementById('address').value;
+    if (!address) {
+        this.submit();
+        return;
+    }
+
+    // Replace 'YOUR_API_KEY' with your actual Google Maps Geocoding API key
+    const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=YOUR_API_KEY`;
+
+    fetch(geocodeUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'OK') {
+                const location = data.results[0].geometry.location;
+                document.getElementById('gps_coordinates').value = location.lat + ',' + location.lng;
+            }
+            this.submit();
+        })
+        .catch(error => {
+            console.error('Error fetching geocode:', error);
+            this.submit();
+        });
+});
+
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
 @endsection
