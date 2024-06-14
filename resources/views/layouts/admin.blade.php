@@ -15,8 +15,12 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin_submissions') }}">Submissions</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin_admissions') }}">Admissions</a></li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin_submissions') ? 'active' : '' }}" href="{{ route('admin_submissions') }}">Submissions</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin_admissions') ? 'active' : '' }}" href="{{ route('admin_admissions') }}">Admissions</a>
+                </li>
                 <li class="nav-item">
                     <form action="{{ route('admin_logout') }}" method="POST" class="d-inline">
                         @csrf

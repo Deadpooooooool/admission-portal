@@ -15,14 +15,20 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="{{ route('admission_form') }}">Admission</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('status') }}">Status</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin_login') }}">Admin Login</a></li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admission_form') ? 'active' : '' }}" href="{{ route('admission_form') }}">Admission</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('status') ? 'active' : '' }}" href="{{ route('status') }}">Status</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin_login') ? 'active' : '' }}" href="{{ route('admin_login') }}">Admin Login</a>
+                </li>
             </ul>
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <div class="container mt-4 mb-4">
         @yield('content')
     </div>
 
